@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>My Beautiful Baby</title>
+    
+    <!-- Importing a clean, emotional serif font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
+
+    <style>
+        /* --- RESET & BASE STYLES --- */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            height: 100%;
+            overflow: hidden; /* Prevent body scroll, handle in wrapper */
+        }
+
+        body {
+            height: 100%;
+            /* Soft dark warm neutral background (Deep warm brown/beige tone) */
+            background-color: #1a1816; 
+            /* Vignette effect via radial gradient */
+            background-image: radial-gradient(circle at center, transparent 0%, #000000 100%);
+            color: #f0ebe0; /* Warm cream text */
+            font-family: 'Lora', serif;
+            display: flex;
+            flex-direction: column;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* --- SCROLLABLE NOTE AREA --- */
+        .note-wrapper {
+            flex: 1;
+            width: 100%;
+            overflow-y: auto; /* Enable scrolling */
+            -webkit-overflow-scrolling: touch; /* Smooth scroll on iOS */
+            padding: 20px;
+            padding-bottom: 60px; /* Extra padding at bottom for safe scrolling */
+            display: flex;
+            justify-content: center;
+        }
+
+        .note-card {
+            width: 100%;
+            max-width: 600px;
+            background-color: #242220; /* Slightly lighter than body */
+            padding: 40px 30px;
+            border-radius: 4px;
+            /* Subtle glow */
+            box-shadow: 0 0 25px rgba(0, 0, 0, 0.3);
+            position: relative;
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            margin: auto 0; /* Center vertically when content is short */
+        }
+
+        /* --- TYPOGRAPHY --- */
+        /* We treat the content as a pre-formatted block to preserve exact whitespace */
+        .message-content {
+            white-space: pre-wrap;
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: #e6e2d3;
+            font-weight: 400;
+        }
+
+        /* --- START SCREEN (TAP TO READ) --- */
+        #intro-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #1a1816;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            cursor: pointer;
+            transition: opacity 0.3s ease-out;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .intro-text {
+            font-size: 1.2rem;
+            color: #a8a390;
+            letter-spacing: 1px;
+            border-bottom: 1px solid transparent;
+            padding-bottom: 5px;
+            transition: border-color 0.3s;
+        }
+
+        #intro-screen:active .intro-text {
+            border-color: #e6e2d3;
+        }
+
+        /* Utility class to hide the intro */
+        .hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        /* --- MOBILE TWEAKS --- */
+        @media (max-width: 480px) {
+            .note-card {
+                padding: 30px 20px;
+            }
+            .message-content {
+                font-size: 1rem;
+            }
+            .note-wrapper {
+                padding: 15px;
+            }
+        }
+        
+        /* iPhone notch / safe area handling */
+        @supports (padding: max(0px)) {
+            .note-wrapper {
+                padding-left: max(15px, env(safe-area-inset-left));
+                padding-right: max(15px, env(safe-area-inset-right));
+                padding-bottom: max(60px, env(safe-area-inset-bottom));
+            }
+            #intro-screen {
+                padding-left: max(20px, env(safe-area-inset-left));
+                padding-right: max(20px, env(safe-area-inset-right));
+                padding-bottom: max(20px, env(safe-area-inset-bottom));
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- START SCREEN -->
+    <div id="intro-screen" onclick="revealNote()">
+        <p class="intro-text">Tap anywhere to read the note</p>
+    </div>
+
+    <!-- NOTE DISPLAY -->
+    <div class="note-wrapper">
+        <div class="note-card">
+            <div class="message-content">My beautiful baby,
+
+I hate the thought of you wondering what you did to deserve all the pain you've been through.
+
+You didn't deserve the hurt, baby.
+
+I know you're strong, but I also know being strong all the time gets exhausting.
+
+So please don't feel like you have to carry everything alone.
+
+You don't have to pretend you're okay for me, and you'll never be a burden to me.
+
+I want to know when you're hurting, when you're tired, and when things feel heavy.
+
+Not because I can fix everything, but because I care about you and I want to be there for you.
+
+Madam Baby, I know you've told me many times already that you're okay, but I still want to be honest about what I've been feeling.
+
+I've noticed some changes lately, baby.
+
+The way we talk feels a little different. We barely talk compared to before, and sometimes it feels like you're only answering my questions rather than really talking to me.
+
+Maybe I'm wrong. Maybe I'm just overthinking.
+
+But when I say "I love you," sometimes I find myself waiting to hear it back.
+
+And today, I found myself missing those random "I miss you's" from you too.
+
+Such a simple thing, yet somehow it always manages to make my day a little softer.
+
+Maybe that's why I noticed its absence.
+
+Not because I'm asking for more.
+
+But because the smallest words from you have always meant the most to me.
+
+Then when we played earlier, your voice sounded a little tired and not really in the mood to talk. I tried being extra cheerful because honestly, I missed hearing you so much.
+
+Baby, what happened?
+
+You know it's okay to not be okay around me, right?
+
+Hindi ko gustong mawala ka.
+
+Ang gusto ko, mawala yung mga dahilan kung bakit nahihirapan tayo.
+
+Mawala yung mga takot na gumugulo sa isip mo.
+
+Mawala yung mga sakit na tahimik mong dinadala mag-isa.
+
+Mawala yung mga luha na hindi mo ipinapakita sa iba.
+
+Mawala yung mga bagay na nagpapabigat sa puso mo kapag mag-isa ka.
+
+Because if there's one thing I'd never want to lose, it's you.
+
+Hindi ikaw ang gusto kong bitawan.
+
+Hindi ikaw ang gusto kong baguhin.
+
+Hindi ikaw ang problema.
+
+Ang gusto ko lang ay unti-unting mawala ang mga sugat, takot, at lungkot na patuloy na sumusunod sa'yo kahit pilit kang lumalaban araw-araw.
+
+And if I could, I'd sit beside every version of you that was hurting and tell her that she didn't deserve any of it.
+
+So no, I don't want a life where you're gone.
+
+I want a life where you're still here, just a little lighter, a little happier, and no longer carrying everything by yourself.
+
+And please don't ever think that my love for you is getting smaller.
+
+Because it doesn't.
+
+Not when you're happy.
+
+Not when you're quiet.
+
+Not when you're struggling.
+
+Not when you're carrying things you don't know how to explain.
+
+My love for you isn't based on how cheerful you are, how often we talk, or how perfect our days are.
+
+I choose you on the good days.
+
+I choose you on the difficult days.
+
+And I choose you on the days when you don't even know how to choose yourself.
+
+So please don't ever think that you're becoming harder to love.
+
+Because if anything, every time I see you fighting battles I can't see, it just makes me want to love you more carefully, more patiently, and more deeply.
+
+So if there's something bothering you, please tell me.
+
+If there's something you want to ask, ask me.
+
+If there's something you're scared to say, say it.
+
+Because my love for you won't change if you do.
+
+If anything, I'll love you even more.
+
+Because to me, opening up means you're trusting me with the parts of yourself that are hurting.
+
+And baby, that's never something I'll take lightly.
+
+And baby, can I ask you something honestly
+
+Have I done anything lately that's been hurting you without realizing it?
+
+Or is there something that's making you feel distant that I should know about?
+
+If I ever did or said something that made you feel that way without me noticing, please tell me.
+
+Not because I want to feel bad or overthink, but because I want to understand you better and fix things properly if needed.
+
+I promise I'll listen.
+
+I won't get angry.
+
+I won't judge you.
+
+I just want to understand you better.
+
+Because the last thing I would ever want is for you to be hurting because of me while I sit here unaware of it.
+
+And if there is something on your mind, please don't keep it all to yourself, baby.
+
+Let me understand.
+
+Let me be there for you.</div>
+        </div>
+    </div>
+
+    <script>
+        function revealNote() {
+            const intro = document.getElementById('intro-screen');
+            // Light fade out
+            intro.style.opacity = '0';
+            setTimeout(function() {
+                intro.classList.add('hidden');
+            }, 300);
+        }
+    </script>
+
+</body>
+</html>
