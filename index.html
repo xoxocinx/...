@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#d9a0ae">
+<title>for you</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400;1,500&family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500;1,600&family=Josefin+Sans:wght@300;400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --blush:#f4d6dc; --pastel:#fbe8ec; --rose:#d98ea0; --deep:#b9506b; --mauve:#8a5a6b;
+  --ivory:#fffaf5; --cream:#f8ece4; --ink:#5a3442;
+  --serif:"Playfair Display","Didot","Bodoni MT",Georgia,"Times New Roman",serif;
+  --body:"Cormorant Garamond","Cormorant",Georgia,"Times New Roman",serif;
+  --sans:"Josefin Sans","Century Gothic","Helvetica Neue",Arial,sans-serif;
+  --burg:#4f1d30; --burg2:#6b2a42; --rosedeep:#9c2c52;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden;background:#3a2230;color:var(--ink);font-family:var(--sans)}
+body{position:fixed;inset:0;width:100%}
+
+/* ---------- Background ---------- */
+#bg{position:fixed;inset:0;overflow:hidden;
+  background:
+    radial-gradient(120% 80% at 50% 105%, #e9a9b8 0%, rgba(233,169,184,0) 60%),
+    radial-gradient(90% 70% at 20% 0%, #f6d3da 0%, rgba(246,211,218,0) 65%),
+    linear-gradient(180deg,#c98598 0%,#d99bab 45%,#eab9c4 100%);
+  animation:drift 60s ease-in-out infinite alternate}
+@keyframes drift{from{background-position:0 0,0 0,0 0}to{background-position:4% 3%,-3% 2%,0 0}}
+#city{position:absolute;left:-10%;right:-10%;bottom:-4%;height:46%;filter:blur(9px);opacity:.75;
+  animation:cityDrift 70s ease-in-out infinite alternate}
+@keyframes cityDrift{from{transform:translateX(-2%)}to{transform:translateX(2%)}}
+.bokeh{position:absolute;border-radius:50%;filter:blur(6px);mix-blend-mode:screen;
+  animation:float var(--d,40s) ease-in-out infinite alternate}
+@keyframes float{from{transform:translate3d(0,0,0) scale(1)}to{transform:translate3d(var(--x,20px),var(--y,-30px),0) scale(1.15)}}
+#bright{position:absolute;inset:0;opacity:0;transition:opacity 5s ease;
+  background:radial-gradient(90% 70% at 50% 45%,#fff6f1 0%,#fbe1e6 55%,#f2c3cd 100%)}
+body.bright #bright{opacity:.92}
+#particles{position:absolute;inset:0;width:100%;height:100%}
+#vignette{position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(ellipse at center,rgba(90,40,60,0) 45%,rgba(90,40,60,.28) 100%);transition:opacity 4s}
+body.bright #vignette{opacity:.25}
+#grain{position:fixed;inset:-50%;width:200%;height:200%;pointer-events:none;opacity:.16;mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 .9 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  animation:grain 1.2s steps(6) infinite}
+@keyframes grain{0%{transform:translate(0,0)}20%{transform:translate(-3%,2%)}40%{transform:translate(2%,-3%)}60%{transform:translate(-2%,-1%)}80%{transform:translate(3%,3%)}100%{transform:translate(0,0)}}
+
+/* ---------- Scenes ---------- */
+.scene{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:calc(env(safe-area-inset-top) + 64px) 28px calc(env(safe-area-inset-bottom) + 72px);
+  text-align:center;opacity:0;visibility:hidden;transition:opacity 1.6s ease,visibility 0s 1.6s}
+.scene.active{opacity:1;visibility:visible;transition:opacity 1.6s ease}
+.intro-text{font-family:var(--body);font-weight:600;color:var(--burg);max-width:34rem;
+  font-size:clamp(1.25rem,5.1vw,1.75rem);line-height:1.55;letter-spacing:.01em;text-shadow:0 0 22px rgba(255,235,240,.55)}
+.intro-text span{display:inline;opacity:0;transition:opacity 2.2s ease}
+.intro-text span.on{opacity:1}
+.intro-text .gap{display:block;height:.8em}
+
+.btn{font-family:var(--sans);font-weight:300;font-size:.95rem;letter-spacing:.22em;text-transform:lowercase;
+  color:var(--burg);background:rgba(255,250,245,.45);border:1px solid rgba(79,29,48,.5);
+  padding:15px 38px;min-height:48px;border-radius:999px;cursor:pointer;margin-top:2.4rem;
+  backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+  opacity:0;transform:translateY(8px);pointer-events:none;
+  transition:opacity 1.6s ease,transform 1.6s ease,background .45s ease,box-shadow .45s ease,color .45s}
+.btn.show{opacity:1;transform:none;pointer-events:auto}
+.btn.show:hover{background:rgba(255,255,255,.7);box-shadow:0 0 34px rgba(255,230,236,.7)}
+.btn.show:active{transform:scale(.96);background:rgba(255,255,255,.8);transition:transform .15s,background .15s}
+#beginBtn{text-transform:none}
+.btn:focus-visible,.ctl:focus-visible,#vol:focus-visible{outline:2px solid var(--burg);outline-offset:3px}
+
+/* ---------- Phrases ---------- */
+#phrase{font-family:var(--serif);font-weight:400;color:var(--burg);
+  font-size:clamp(1.9rem,9vw,4.2rem);line-height:1.2;letter-spacing:.01em;max-width:92vw;
+  white-space:nowrap;text-shadow:0 0 28px rgba(255,235,240,.5);
+  opacity:0;will-change:opacity,transform,filter}
+#phrase .v{font-style:italic;font-weight:500;color:var(--rosedeep);text-shadow:0 0 24px rgba(255,235,240,.6)}
+#phrase .nb{white-space:nowrap}
+#phrase .slot{display:inline-block;white-space:nowrap;vertical-align:baseline;
+  transition:width var(--vw,320ms) cubic-bezier(.4,0,.2,1)}
+#phrase .slot .v{display:inline-block;opacity:1;transition:opacity var(--vf,300ms) cubic-bezier(.4,0,.2,1)}
+#phrase .slot .v.hide{opacity:0}
+#phrase.pre{transform:translateY(22px)}
+#phrase.pre.blur{filter:blur(14px)}
+#phrase.pre.scale{transform:translateY(14px) scale(.94)}
+#phrase.in{opacity:1;transform:none;filter:none;
+  transition:opacity var(--in) ease,transform var(--in) cubic-bezier(.2,.7,.2,1),filter var(--in) ease}
+#phrase.out{opacity:0;transform:translateY(-12px);filter:none;
+  transition:opacity var(--out) ease,transform var(--out) ease}
+
+#hud{position:fixed;left:0;right:0;bottom:0;padding:0 0 env(safe-area-inset-bottom);opacity:0;transition:opacity 1.6s ease;pointer-events:none}
+#hud.on{opacity:1}
+#count{text-align:center;font-weight:300;font-size:.78rem;letter-spacing:.3em;color:var(--burg2);margin-bottom:14px}
+#track{height:2px;background:rgba(79,29,48,.2)}
+#bar{height:100%;width:0;background:var(--burg2);transition:width 1.4s ease}
+
+.final-text{font-family:var(--body);font-weight:600;font-style:italic;color:var(--burg2);max-width:30rem;
+  font-size:clamp(1.7rem,7vw,2.7rem);line-height:1.4}
+#final .btn{color:var(--burg2);border-color:rgba(107,42,66,.55);background:rgba(255,250,245,.35)}
+#final .btn.show:hover{background:rgba(255,255,255,.7);box-shadow:0 0 34px rgba(255,255,255,.7)}
+
+/* ---------- Assurance scene ---------- */
+#assurance{justify-content:flex-start;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+#assurance::-webkit-scrollbar{display:none}
+.assure-wrap{margin:auto 0;width:100%;max-width:34rem;display:flex;flex-direction:column;align-items:center}
+.assure-text{font-family:var(--body);font-weight:600;color:var(--burg);
+  font-size:clamp(1.12rem,4.4vw,1.45rem);line-height:1.75;letter-spacing:.01em;text-shadow:0 0 22px rgba(255,235,240,.55)}
+.assure-text p{margin:0 0 1.6em}
+.assure-text p:last-child{margin-bottom:0}
+.assure-text span{opacity:0;transition:opacity 2s ease}
+.assure-text span.on{opacity:1}
+#assurance .btn{color:var(--burg2);border-color:rgba(107,42,66,.55);background:rgba(255,250,245,.35);flex:none}
+#assurance .btn.show:hover{background:rgba(255,255,255,.7);box-shadow:0 0 34px rgba(255,255,255,.7)}
+
+/* ---------- Music control ---------- */
+#topbar{position:fixed;top:calc(env(safe-area-inset-top) + 14px);right:14px;display:flex;align-items:center;gap:8px;z-index:5}
+#music{display:none;align-items:center;gap:6px;
+  background:rgba(255,250,245,.5);border:1px solid rgba(79,29,48,.4);border-radius:999px;padding:2px 16px 2px 4px;
+  backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+.ctl{display:flex;align-items:center;gap:9px;height:44px;padding:0 8px 0 12px;border:0;border-radius:999px;background:transparent;
+  color:var(--burg);cursor:pointer;font-family:var(--sans);font-weight:400;font-size:.72rem;letter-spacing:.26em;
+  transition:background .3s,transform .15s}
+.ctl:hover{background:rgba(255,255,255,.55)}
+.ctl:active{transform:scale(.95)}
+.ctl svg{width:15px;height:15px;fill:currentColor}
+#vol{-webkit-appearance:none;appearance:none;width:64px;height:2px;background:rgba(79,29,48,.5);border-radius:2px;outline-offset:6px}
+#vol::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:var(--burg);border:0}
+#vol::-moz-range-thumb{width:14px;height:14px;border-radius:50%;background:var(--burg);border:0}
+
+/* ---------- Three-dot menu ---------- */
+.dots{width:50px;height:50px;border-radius:50%;display:grid;place-items:center;cursor:pointer;color:var(--burg);
+  background:rgba(255,250,245,.5);border:1px solid rgba(79,29,48,.4);
+  backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);transition:background .3s,transform .15s,opacity .3s ease;
+  opacity:.3}
+.dots:hover,.dots:focus-visible,.dots:active,.dots[aria-expanded="true"]{opacity:.75}
+.dots:hover,.dots[aria-expanded="true"]{background:rgba(255,255,255,.75)}
+.dots:active{transform:scale(.92)}
+.dots:focus-visible,#menu button:focus-visible{outline:2px solid var(--burg);outline-offset:3px}
+.dots svg{width:20px;height:20px;fill:currentColor}
+#menu{position:absolute;top:calc(100% + 10px);right:0;min-width:200px;padding:6px;border-radius:18px;
+  background:rgba(255,246,248,.93);border:1px solid rgba(79,29,48,.22);box-shadow:0 12px 40px rgba(110,40,65,.25);
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  opacity:0;transform:translateY(-6px);visibility:hidden;pointer-events:none;
+  transition:opacity .3s ease,transform .3s ease,visibility 0s .3s}
+#menu.open{opacity:1;transform:none;visibility:visible;pointer-events:auto;transition:opacity .3s ease,transform .3s ease}
+#menu button{display:flex;justify-content:space-between;align-items:center;gap:22px;width:100%;text-align:left;min-height:44px;padding:0 16px;border:0;border-radius:12px;
+  background:transparent;font-family:var(--sans);font-weight:300;font-size:.82rem;letter-spacing:.14em;color:var(--burg);
+  cursor:pointer;transition:background .3s}
+#menu .st{font-weight:400;color:var(--rosedeep);letter-spacing:.16em}
+#menu button:hover{background:rgba(217,142,160,.28)}
+#menu button:active{background:rgba(217,142,160,.45)}
+
+@media (prefers-reduced-motion:reduce){
+  #bg,#city,.bokeh,#grain{animation:none}
+  #particles{display:none}
+  #phrase.pre,#phrase.pre.blur,#phrase.pre.scale{transform:none;filter:none}
+  #phrase.out{transform:none}
+  .btn{transform:none}
+}
+</style>
+</head>
+<body>
+
+<div id="bg" aria-hidden="true">
+  <svg id="city" viewBox="0 0 1000 300" preserveAspectRatio="none"></svg>
+  <div id="bokehLayer"></div>
+  <canvas id="particles"></canvas>
+  <div id="bright"></div>
+  <div id="vignette"></div>
+</div>
+<div id="grain" aria-hidden="true"></div>
+
+<div id="topbar">
+  <button class="dots" id="menuBtn" aria-label="More options" aria-haspopup="menu" aria-expanded="false" aria-controls="menu"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/></svg></button>
+  <div id="music">
+    <button class="ctl" id="playBtn" aria-label="Play music"></button>
+    <input id="vol" type="range" min="0" max="1" step="0.01" value="0.6" aria-label="Volume">
+  </div>
+  <div id="menu" role="menu" aria-label="More options">
+    <button role="menuitemcheckbox" aria-checked="false" id="musicItem"><span>MUSIC</span><span class="st">OFF</span></button>
+    <button role="menuitem" id="restartItem">START OVER</button>
+  </div>
+</div>
+
+<!-- Keep music.mp3 in the same folder as this file -->
+<audio id="bgm" src="music.mp3" loop preload="auto"></audio>
+
+<main>
+  <section class="scene active" id="intro">
+    <p class="intro-text" id="introText"></p>
+    <button class="btn" id="beginBtn">BEGIN</button>
+  </section>
+
+  <section class="scene" id="main" aria-live="polite">
+    <h1 id="phrase"></h1>
+  </section>
+
+  <section class="scene" id="final">
+    <p class="final-text">and if you ever wonder how much you mean to me, let these words remind you.</p>
+  </section>
+
+  <section class="scene" id="assurance">
+    <div class="assure-wrap">
+      <div class="assure-text" id="assureText"></div>
+      <button class="btn" id="againBtn">Watch Again</button>
+    </div>
+  </section>
+</main>
+
+<div id="hud"><div id="count">01/40</div><div id="track"><div id="bar"></div></div></div>
+
+<script>
+/* =====================================================
+   CONFIG — all timing is in milliseconds. Edit freely.
+   ===================================================== */
+const CONFIG = {
+  introLineGap: 2600,       // delay between each opening sentence fading in
+  introLineFade: 2200,
+  introBeforeButton: 2200,  // pause after last sentence before "Begin" appears
+  phraseFadeIn: 1300,       // first phrase / whole-phrase entrance
+  phraseHold: 1450,         // time a middle word stays fully visible
+  phraseFadeOut: 900,       // final whole-phrase exit
+  wordFadeOut: 210,         // middle word fades out
+  wordFadeIn: 330,          // middle word fades in
+  wordResize: 280,          // smooth re-centering when word width changes
+  lastPhraseHold: 5200,     // final phrase stays longer
+  brightenLead: 600,        // time between brightening start and phrase fade-out
+  finalDelay: 2600,         // wait after phrase fades before final message
+  finalHold: 6500,          // how long the final message stays before the assurance scene
+  assureLead: 1800,         // pause before the first assurance sentence appears
+  assureBase: 1000,         // base pause after each assurance sentence
+  assurePerChar: 30,        // extra reading time per character
+  assureParaGap: 900,       // extra pause between paragraphs
+  assureBeforeButton: 2400, // pause after the last sentence before WATCH AGAIN appears
+  blurEvery: [3, 11, 19, 27, 35],   // phrase numbers using blur-to-focus
+  scaleEvery: [6, 15, 23, 31, 38],  // phrase numbers using subtle scale-in
+  musicVolume: 0.6
+};
+const REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
+if (REDUCED) Object.assign(CONFIG,{introLineGap:1200,phraseFadeIn:500,phraseHold:1300,phraseFadeOut:400,wordFadeOut:150,wordFadeIn:220,wordResize:160,introLineFade:900});
+
+/* The 40 phrases — [verb, emphasized word] kept exactly in order, duplicates preserved. */
+const PHRASES = [
+"I miss you.","I need you.","I value you.","I admire you.","I want you.",
+"I honor you.","I prioritize you.","I choose you.","I admire you.","I crave you.",
+"I adore you.","I cherish you.","I treasure you.","I worship you.","I desire you.",
+"I admire you.","I appreciate you.","I prioritize you.","I choose you.","I value you.",
+"I honor you.","I need you.","I want you.","I miss you.","I crave you.",
+"I yearn you.","I pursue you.","I cherish you.","I romanticize you.","I celebrate you.",
+"I understand you.","I accept you.","I embrace you.","I reassure you.","I comfort you.",
+"I protect you.","I captivate you.","I enchant you.","I remember you.","I notice you."
+];
+const INTRO = [
+"I hope that when you open this, kahit saglit lang, you'll find a little peace from everything that's been occupying your mind.",
+"Sana, habang binabasa mo ang mga salitang ito, unti-unting tumahimik ang mga ingay sa isip mo.",
+"You don't have to figure everything out right now, and you don't have to carry every thought all at once.",
+"For now, let yourself pause.",
+"Hayaan mong maging munting pahinga mo muna ang mga salitang inihanda ko para sa'yo.",
+"And perhaps, somewhere between these words, you'll find a few reminders of how beautiful, valued, and appreciated you truly are."
+];
+
+const ASSURANCE = [
+`I know things have been overwhelming lately, and I wish I could make even a little of that heaviness easier for you. But please remember na hindi mo kailangang harapin lahat nang mag-isa. Whatever happened in the past, whatever anyone says about you, it doesn't define who you are, and it won't automatically change how I see you. I'd rather listen to your side, understand you, and get to know you for who you really are.`,
+`You don't have to rush yourself into explaining everything, either. Take your time. I want you to feel safe enough to be honest with me, even when things aren't easy. And I hope you never feel na kailangan mong maging okay palagi just to keep me around.`,
+`I can't promise na kaya kong ayusin lahat ng problema mo, but I can do my best to listen, understand, and be someone you can be comfortable with. I don't want you to feel like you have to earn my patience or hide the parts of yourself that are struggling.`,
+`And if the world feels a little too heavy lately, I hope you remember that you deserve gentleness, too. Hindi mo kailangang maging matatag sa bawat pagkakataon. Even flowers need time before they bloom again, and there's nothing wrong with taking your time.`,
+`I'm genuinely glad our paths crossed, and I hope that, little by little, I can give you more reasons to feel at ease rather than more things to worry about. Lovelots! Take things one day at a time, okay????? `
+];
+
+/* =====================================================
+   Helpers
+   ===================================================== */
+const $ = id => document.getElementById(id);
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+const scenes = { intro:$('intro'), main:$('main'), final:$('final'), assurance:$('assurance') };
+const phraseEl = $('phrase'), countEl = $('count'), barEl = $('bar'), hud = $('hud');
+const audio = $('bgm'), playBtn = $('playBtn'), vol = $('vol'), musicBox = $('music');
+let run = 0; // sequence token: bumping it cancels any running sequence
+
+function showScene(name){
+  for (const k in scenes) scenes[k].classList.toggle('active', k === name);
+}
+function showBtn(btn, on){ btn.classList.toggle('show', on); }
+
+/* =====================================================
+   Opening scene
+   ===================================================== */
+const introEl = $('introText');
+INTRO.forEach((s, i) => {
+  const sp = document.createElement('span');
+  sp.textContent = s + ' ';
+  sp.style.transitionDuration = CONFIG.introLineFade + 'ms';
+  introEl.appendChild(sp);
+  if (i === 2 || i === 3) { /* soft paragraph breaks keep the long message airy */
+    const g = document.createElement('span'); g.className = 'gap'; g.style.opacity = 1; introEl.appendChild(g);
+  }
+});
+/* Assurance text — each paragraph is split into sentences (text itself is untouched) so they can fade in one by one */
+const assureEl = $('assureText'), assureScene = scenes.assurance;
+let assureUserScrolled = false;
+ASSURANCE.forEach(par => {
+  const p = document.createElement('p');
+  par.split(/(?<=[.?!])\s+(?=[A-Z])/).forEach(sent => {
+    const sp = document.createElement('span');
+    sp.textContent = sent + ' ';
+    p.appendChild(sp);
+  });
+  assureEl.appendChild(p);
+});
+['wheel','touchmove'].forEach(ev => assureScene.addEventListener(ev, () => { assureUserScrolled = true; }, {passive:true}));
+function followAssure(el){   // gently keep the newest sentence in view on small screens
+  if (assureUserScrolled || assureScene.scrollHeight <= assureScene.clientHeight) return;
+  const r = el.getBoundingClientRect(), s = assureScene.getBoundingClientRect();
+  const over = r.bottom - (s.bottom - 110);
+  if (over > 0) assureScene.scrollBy({top: over, behavior: REDUCED ? 'auto' : 'smooth'});
+}
+async function playAssurance(id){
+  assureEl.querySelectorAll('span').forEach(s => s.classList.remove('on'));
+  assureScene.scrollTop = 0; assureUserScrolled = false;
+  showScene('assurance');
+  await sleep(CONFIG.assureLead); if (id !== run) return;
+  const spans = [...assureEl.querySelectorAll('span')];
+  for (const sp of spans){
+    sp.classList.add('on');
+    followAssure(sp);
+    const endOfPara = !sp.nextElementSibling;
+    await sleep(CONFIG.assureBase + sp.textContent.length * CONFIG.assurePerChar + (endOfPara ? CONFIG.assureParaGap : 0));
+    if (id !== run) return;
+  }
+  await sleep(CONFIG.assureBeforeButton); if (id !== run) return;
+  showBtn($('againBtn'), true);
+  if (!assureUserScrolled) $('againBtn').scrollIntoView({block:'end', behavior: REDUCED ? 'auto' : 'smooth'});
+}
+
+async function playIntro(){
+  const id = ++run;
+  assureEl.querySelectorAll('span').forEach(s => s.classList.remove('on'));
+  assureScene.scrollTop = 0;
+  document.body.classList.remove('bright');
+  hud.classList.remove('on');
+  showBtn($('beginBtn'), false); showBtn($('againBtn'), false);
+  introEl.querySelectorAll('span:not(.gap)').forEach(s => s.classList.remove('on'));
+  showScene('intro');
+  await sleep(1800); if (id !== run) return;
+  for (const s of introEl.querySelectorAll('span:not(.gap)')){
+    s.classList.add('on');
+    await sleep(CONFIG.introLineGap); if (id !== run) return;
+  }
+  await sleep(CONFIG.introBeforeButton); if (id !== run) return;
+  showBtn($('beginBtn'), true);
+}
+
+/* =====================================================
+   Main sequence — one phrase at a time, strictly in order
+   ===================================================== */
+let verbEl = null, slotEl = null;
+function buildPhrase(firstVerb){
+  // "I [verb] you." — "I" and "you." are static; only the verb slot changes
+  phraseEl.innerHTML = 'I <span class="slot"><span class="v"></span></span> <span class="nb">you.</span>';
+  slotEl = phraseEl.querySelector('.slot'); verbEl = slotEl.querySelector('.v');
+  verbEl.textContent = firstVerb;
+  slotEl.style.transition = 'none';
+  slotEl.style.width = verbEl.getBoundingClientRect().width + 'px';
+  void slotEl.offsetWidth; slotEl.style.transition = '';
+}
+function swapVerb(verb){
+  verbEl.textContent = verb;
+  slotEl.style.width = verbEl.getBoundingClientRect().width + 'px';
+}
+function setProgress(n){
+  countEl.textContent = String(n).padStart(2,'0') + '/' + PHRASES.length;
+  barEl.style.width = (n / PHRASES.length * 100) + '%';
+}
+async function playSequence(){
+  const id = ++run;
+  showScene('main');
+  setProgress(1); barEl.style.width = '0%';
+  hud.classList.add('on');
+  phraseEl.style.setProperty('--in', CONFIG.phraseFadeIn + 'ms');
+  phraseEl.style.setProperty('--out', CONFIG.phraseFadeOut + 'ms');
+  phraseEl.style.setProperty('--vf', CONFIG.wordFadeOut + 'ms');
+  phraseEl.style.setProperty('--vw', CONFIG.wordResize + 'ms');
+  await sleep(1700); if (id !== run) return;
+
+  const verbOf = t => t.split(' ')[1];
+  buildPhrase(verbOf(PHRASES[0]));
+  setProgress(1);
+  phraseEl.className = 'pre';
+  void phraseEl.offsetWidth;
+  phraseEl.className = 'in';           // whole phrase enters once
+  await sleep(CONFIG.phraseFadeIn + CONFIG.phraseHold); if (id !== run) return;
+
+  for (let i = 1; i < PHRASES.length; i++){
+    // fade only the middle word out…
+    verbEl.style.setProperty('--vf', CONFIG.wordFadeOut + 'ms');
+    verbEl.classList.add('hide');
+    await sleep(CONFIG.wordFadeOut); if (id !== run) return;
+    // …swap it, glide the slot to the new width, and fade it back in
+    swapVerb(verbOf(PHRASES[i]));
+    setProgress(i + 1);
+    void verbEl.offsetWidth;
+    verbEl.style.setProperty('--vf', CONFIG.wordFadeIn + 'ms');
+    verbEl.classList.remove('hide');
+    const last = i === PHRASES.length - 1;
+    await sleep(Math.max(CONFIG.wordFadeIn, CONFIG.wordResize) + (last ? CONFIG.lastPhraseHold : CONFIG.phraseHold)); if (id !== run) return;
+  }
+  document.body.classList.add('bright');             // gradually brighten
+  await sleep(CONFIG.brightenLead); if (id !== run) return;
+  phraseEl.className = 'out';                        // whole phrase leaves only at the very end
+  await sleep(CONFIG.phraseFadeOut); if (id !== run) return;
+  hud.classList.remove('on');
+  await sleep(CONFIG.finalDelay); if (id !== run) return;
+  showScene('final');
+  await sleep(CONFIG.finalHold); if (id !== run) return;
+  await playAssurance(id);
+}
+
+/* =====================================================
+   Music — optional, never autoplays, never restarts
+   ===================================================== */
+const ICON_PLAY = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
+const ICON_PAUSE = '<svg viewBox="0 0 24 24"><path d="M6 5h4v14H6zm8 0h4v14h-4z"/></svg>';
+
+let fileOk = false, synthOn = false;
+const isPlaying = () => !audio.paused;
+function syncIcon(){
+  const p = isPlaying();
+  playBtn.innerHTML = (p ? ICON_PAUSE : ICON_PLAY) + '<span>MUSIC</span>';
+  playBtn.setAttribute('aria-label', p ? 'Pause music' : 'Play music');
+  const mi = $('musicItem');
+  if (mi){ mi.querySelector('.st').textContent = p ? 'ON' : 'OFF'; mi.setAttribute('aria-checked', p); }
+}
+audio.volume = vol.value = CONFIG.musicVolume;
+audio.addEventListener('loadedmetadata', () => { fileOk = true; syncIcon(); });
+audio.addEventListener('error', () => { fileOk = false; syncIcon(); });
+audio.addEventListener('play', syncIcon); audio.addEventListener('pause', syncIcon);
+audio.load();
+playBtn.addEventListener('click', async () => {
+  if (isPlaying()) audio.pause();
+  else { try { await audio.play(); } catch(e){} }
+  syncIcon();
+});
+vol.addEventListener('input', () => { audio.volume = +vol.value; });
+syncIcon();
+
+/* =====================================================
+   Three-dot menu
+   ===================================================== */
+const menuBtn = $('menuBtn'), menu = $('menu');
+function setMenu(o){ menu.classList.toggle('open', o); menuBtn.setAttribute('aria-expanded', o); }
+menuBtn.addEventListener('click', e => { e.stopPropagation(); setMenu(!menu.classList.contains('open')); });
+document.addEventListener('click', e => { if (!menu.contains(e.target)) setMenu(false); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') setMenu(false); });
+$('musicItem').addEventListener('click', () => { setMenu(false); playBtn.click(); });
+$('restartItem').addEventListener('click', () => { setMenu(false); resetAll(); });
+
+/* =====================================================
+   Buttons
+   ===================================================== */
+$('beginBtn').addEventListener('click', () => {
+  showBtn($('beginBtn'), false);
+  playSequence();
+});
+function resetAll(){   // music state is left untouched
+  phraseEl.className = '';
+  barEl.style.transition = 'none'; setProgress(1); barEl.style.width = '0%';
+  void barEl.offsetWidth; barEl.style.transition = '';
+  playIntro();   // cancels any running sequence, clears final scene + brightness, restores opening
+}
+$('againBtn').addEventListener('click', resetAll);
+
+/* =====================================================
+   Background: city bokeh, floating bokeh, particles
+   ===================================================== */
+(function buildBackground(){
+  const city = $('city'), NS = 'http://www.w3.org/2000/svg';
+  const cols = ['#fff1e8','#ffd6df','#ffc2d1','#f7b3c6','#ffe6c9'];
+  for (let i = 0; i < 46; i++){
+    const c = document.createElementNS(NS,'circle');
+    c.setAttribute('cx', Math.random()*1000);
+    c.setAttribute('cy', 110 + Math.random()*180);
+    c.setAttribute('r', 5 + Math.random()*20);
+    c.setAttribute('fill', cols[i % cols.length]);
+    c.setAttribute('opacity', (.25 + Math.random()*.5).toFixed(2));
+    city.appendChild(c);
+  }
+  const layer = $('bokehLayer');
+  for (let i = 0; i < 9; i++){
+    const b = document.createElement('div'); b.className = 'bokeh';
+    const s = 60 + Math.random()*140;
+    b.style.cssText = `width:${s}px;height:${s}px;left:${Math.random()*100}%;top:${Math.random()*85}%;` +
+      `background:radial-gradient(circle,rgba(255,235,240,.5),rgba(255,235,240,0) 70%);opacity:${.25+Math.random()*.35};` +
+      `--d:${35+Math.random()*30}s;--x:${(Math.random()-.5)*80}px;--y:${(Math.random()-.5)*80}px`;
+    layer.appendChild(b);
+  }
+  if (REDUCED) return;
+  const cv = $('particles'), ctx = cv.getContext('2d');
+  let W, H, dots = [];
+  function size(){
+    const dpr = Math.min(devicePixelRatio || 1, 2);
+    W = cv.width = innerWidth * dpr; H = cv.height = innerHeight * dpr;
+    dots = Array.from({length: innerWidth < 600 ? 26 : 44}, () => ({
+      x: Math.random()*W, y: Math.random()*H, r: (.8 + Math.random()*2.4)*dpr,
+      vy: -(.08 + Math.random()*.25)*dpr, vx: (Math.random()-.5)*.12*dpr, a: .2 + Math.random()*.5, p: Math.random()*6
+    }));
+  }
+  size(); addEventListener('resize', size);
+  (function tick(t){
+    ctx.clearRect(0,0,W,H);
+    for (const d of dots){
+      d.x += d.vx; d.y += d.vy;
+      if (d.y < -10) { d.y = H + 10; d.x = Math.random()*W; }
+      const tw = .6 + .4*Math.sin(t/1600 + d.p);
+      ctx.beginPath(); ctx.arc(d.x, d.y, d.r, 0, 6.283);
+      ctx.fillStyle = `rgba(255,240,244,${d.a*tw})`; ctx.fill();
+    }
+    requestAnimationFrame(tick);
+  })(0);
+})();
+
+playIntro();
+</script>
+</body>
+</html>
